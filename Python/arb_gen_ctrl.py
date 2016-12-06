@@ -78,17 +78,20 @@ if __name__ == "__main__":
 
   # now try to write command to modify the waveform
   cmmd = "C1:WVDT M50,WVNM,wave2,TYPE,5,LENGTH,32KB,FREQ,1000.000000000,AMPL,4.000000000,OFST,0.000000000,PHASE,0.000000000,WAVEDATA,"
-  cmmd += "\x00"
-  whole_cmmd = cmmd + waveform_data
-  my_instrument.write_raw(whole_cmmd)
+  cmmd += "\xFF"
+  # whole_cmmd = cmmd + waveform_data
+  # my_instrument.write_raw(whole_cmmd)
   
-  # values = [0x1FFF] * 1024
-  # values += [0x2000] * 1024
-  # my_instrument.write_binary_values(cmmd, values, datatype="H", is_big_endian = True)
+  values = [0x1FFF] * 8192
+  values += [0x2000] * 8192
+  # my_instrument.write_binary_values(cmmd, values, datatype="H", is_big_endian = True, termination='')
   
-  print(waveform_data_index)
-  print(type(data))
-  print (len(data))
+  bin_values = ""
+  for i in range(len(values)):
+    bin_values += chr((values[i] >> 8) & 0xFF)
+    bin_values += chr(values[i] & 0xFF)
+
+  my_instrument.write_raw(cmmd + bin_values)
 
   print my_instrument.write('C1:ARWV INDEX,51')
 
