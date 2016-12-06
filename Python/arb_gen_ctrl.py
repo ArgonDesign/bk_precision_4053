@@ -77,7 +77,7 @@ if __name__ == "__main__":
   waveform_data = data[waveform_data_index:]
 
   # now try to write command to modify the waveform
-  cmmd = "C1:WVDT M50,WVNM,wave2,TYPE,5,LENGTH,32KB,FREQ,1000.000000000,AMPL,3.000000000,OFST,0.000000000,PHASE,0.000000000,WAVEDATA,"
+  cmmd = "C1:WVDT M50,WVNM,wave2,TYPE,5,LENGTH,32KB,FREQ,1000.000000000,AMPL,4.000000000,OFST,0.000000000,PHASE,0.000000000,WAVEDATA,"
   cmmd += "\x00"
   whole_cmmd = cmmd + waveform_data
   my_instrument.write_raw(whole_cmmd)
