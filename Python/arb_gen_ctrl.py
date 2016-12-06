@@ -20,7 +20,11 @@ def dump_ascii_hex(data, step = 16):
 if __name__ == "__main__":
   rm = visa.ResourceManager()
   my_instrument = rm.open_resource(u'USB0::0xF4ED::0xEE3A::389D15114::INSTR')
-  # print my_instrument.query('*IDN?')
+  # setup write termination characters
+  my_instrument.write_termination = "\n"
+
+  # query the instrument
+  print my_instrument.query('*IDN?')
 
   # my_instrument.write('C1:OUTP ON')
   #print my_instrument.query('ARWV?')
@@ -73,7 +77,7 @@ if __name__ == "__main__":
   waveform_data = data[waveform_data_index:]
 
   # now try to write command to modify the waveform
-  cmmd = "WVDT M50,WVNM,wave2,TYPE,5,LENGTH,32KB,FREQ,1000.000000000,AMPL,3.000000000,OFST,0.000000000,PHASE,0.000000000,WAVEDATA,"
+  cmmd = "C1:WVDT M50,WVNM,wave2,TYPE,5,LENGTH,32KB,FREQ,1000.000000000,AMPL,3.000000000,OFST,0.000000000,PHASE,0.000000000,WAVEDATA,"
   cmmd += "\x00"
   whole_cmmd = cmmd + waveform_data
   my_instrument.write_raw(whole_cmmd)
@@ -85,5 +89,7 @@ if __name__ == "__main__":
   print(waveform_data_index)
   print(type(data))
   print (len(data))
+
+  print my_instrument.write('C1:ARWV INDEX,51')
 
   my_instrument.close()
