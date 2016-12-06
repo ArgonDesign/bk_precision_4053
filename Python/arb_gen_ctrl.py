@@ -61,7 +61,28 @@ if __name__ == "__main__":
 
   my_instrument.write('WVDT? M50')
   data = my_instrument.read_raw()
-  dump_ascii_hex(data)
+  # dump_ascii_hex(data)
+  
+  # strip off actual waveform data
+  waveform_str_to_find = "WAVEDATA,"
+  waveform_data_index = data.find(waveform_str_to_find) + len(waveform_str_to_find)
+  # make sure that the index is odd (waveform data have to be aligned in actual USB packet)
+  if ((waveform_data_index % 2) == 0):
+    waveform_data_index += 1
+  
+  waveform_data = data[waveform_data_index:]
+
+  # now try to write command to modify the waveform
+  cmmd = "WVDT M50,WVNM wave2,TYPE,5,LENGTH,32KB,FREQ,1000.000000000,AMPL,3.000000000,OFST,0.000000000,PHASE,0.000000000,WAVEDATA,"
+  cmmd += "\x00"
+  whole_cmmd = cmmd + waveform_data
+  my_instrument.write_raw(whole_cmmd)
+  
+  # values = [0x1FFF] * 1024
+  # values += [0x2000] * 1024
+  # my_instrument.write_binary_values(cmmd, values, datatype="H", is_big_endian = True)
+  
+  print(waveform_data_index)
   print(type(data))
   print (len(data))
 
