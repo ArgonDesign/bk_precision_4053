@@ -63,11 +63,11 @@ class BkPrecision4053:
     print (self.instrument.query("IDN-SGLT-PRI?"))
     print (self.instrument.query("PROD BAND?"))
 
-  def define_arbitrary_waveform(self, index, data, name = None, freq_hz = 1000.0, amp_v = 5.0, offset_v = 0.0, phase_deg = 0.0):
+  def define_arbitrary_waveform(self, mem_index, data, name = None, freq_hz = 1000.0, amp_v = 5.0, offset_v = 0.0, phase_deg = 0.0):
   
   # check if given arguments values are correct
-    if ((index < 0) or (index > 9)):
-      raise ValueError("Arbitrary waveform index {0:d} is outside <0,9> range".format(index))
+    if ((mem_index < 0) or (mem_index > 9)):
+      raise ValueError("Arbitrary waveform index {0:d} is outside <0,9> range".format(mem_index))
     
     if (len(data) != 16384):
       raise ValueError("Arbitrary waveform data lenght = {0:d} bytes has to be equal to 16384".format(len(data)))
@@ -98,10 +98,10 @@ class BkPrecision4053:
       raise ValueError("Arbitrary waveform phase has to be withing <-360, 360> degrees range")
       
   # arguments are fine, so prepare their string version in the right format
-    mem_index_str = "M{0:02d}".format(index + 50)
+    mem_index_str = "M{0:2d}".format(mem_index + 50)
     if (name == None):
     # create default name if necessary
-      name_str = "wave{0:1d}".format(index)
+      name_str = "wave{0:1d}".format(mem_index)
     else:
     # name was provided, so make sure that it is 5 characters long
       name_str = name
@@ -126,9 +126,42 @@ class BkPrecision4053:
     cmmd += "WAVEDATA,"
   
   # and the waveform data
-  # first find the maximum data value and scale the whole set accordingly
+  # first find the minimum and maximum data value and scale the whole set accordingly
+    min_val = min(data)
+    max_val = max(data)
+    scale = max(abs(min_val), abs(max_val))
+
+  # the instrument requires the waveform values to be provides as 14 bit signed integer values
+  # for example minimum negative voltage is represented as 0x2000 and maximum positive voltage is represented as 0x1FFF
+
+    bin_data_str = ""
+    for i in range(len(data)):
+      sample_float = data[i]
+      sample_float_scaled = sample_float / scale
+      sample_int_scaled_int14 = (int)(sample_float_scaled * (float)0x1FFF)  # multiplying by 0x1FFF rather than 0x2000 will prevent overflow
+    # convert it to big endian binary string representation as required by the instrument
+      bin_data_str += chr((sample_int_scaled_int14 >> 8) & 0xFF)
+      bin_data_str += chr(sample_int_scaled_int14 & 0xFF)
+
+  # for some reason (probably a bug in BK precision software), WVDT command data length has to be one byte less that what
+  # one expects it to be. Failing to strip one byte off results in the generator ignoring the WVDT command completely
+    bin_data_str = bin_data_str[:-1]
+
+  # finally we are ready to send the command to the instrument
+    self.instrument.write_raw(cmmd + bin_data_str)
+
+  def select_arbitrary_waveform(self, channel_no, mem_index):
   
+  # check if given arguments values are correct
+    if ((channel_no < 1) or (channel_no > 2)):
+      raise ValueError("Arbitrary waveform generator channel number can either be set to 1 or 2")
   
+    if ((mem_index < 0) or (mem_index > 9)):
+      raise ValueError("Arbitrary waveform index {0:d} is outside <0,9> range".format(mem_index))
     
+  # arguments are fine, so prepare their string version in the right format
+    channel_no_str = "C{0:1d".format(channel_no)
+    mem_index_str = "M{0:2d}".format(mem_index + 50)
     
-    
+    cmmd = channel_no_str + ":ARWV INDEX," + mem_index_str
+    self.instrument.write(cmmd)
