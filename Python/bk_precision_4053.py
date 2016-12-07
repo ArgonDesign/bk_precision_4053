@@ -16,7 +16,8 @@ class BkPrecision4053:
     self.instrument_open = True
     
     self.instrument.write_termination = "\n"  # by default the commands should be ended with single Line Feed character
-
+    self.instrument.read_termination = "\n"  # by default the commands replies should be ended with single Line Feed character
+    
   # check if correct instrument is connected
     idn_string = self.instrument.query("*IDN?")
     if (idn_string.find("BK Precision,4053") == -1):
@@ -63,7 +64,7 @@ class BkPrecision4053:
     print (self.instrument.query("IDN-SGLT-PRI?"))
     print (self.instrument.query("PROD BAND?"))
 
-  def define_arbitrary_waveform(self, mem_index, data, name = None, freq_hz = 1000.0, amp_v = 5.0, offset_v = 0.0, phase_deg = 0.0):
+  def define_arbitrary_waveform(self, mem_index, data, name = None, freq_hz = 1000.0, amp_v = 1.0, offset_v = 0.0, phase_deg = 0.0):
   
   # check if given arguments values are correct
     if ((mem_index < 0) or (mem_index > 9)):
@@ -164,7 +165,7 @@ class BkPrecision4053:
       raise ValueError("Arbitrary waveform index {0:d} is outside <0,9> range".format(mem_index))
     
   # arguments are fine, so prepare their string version in the right format
-    channel_no_str = "C{0:1d".format(channel_no)
+    channel_no_str = "C{0:1d}".format(channel_no)
     mem_index_str = "M{0:2d}".format(mem_index + 50)
     
     cmmd = channel_no_str + ":ARWV INDEX," + mem_index_str
