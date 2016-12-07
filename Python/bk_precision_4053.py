@@ -151,7 +151,7 @@ class BkPrecision4053:
   # finally we are ready to send the command to the instrument
     self.instrument.write_raw(cmmd + bin_data_str)
 
-  def select_arbitrary_waveform(self, channel_no, mem_index):
+  def select_channel_arbitrary_waveform(self, channel_no, mem_index):
   
   # check if given arguments values are correct
     if ((channel_no < 1) or (channel_no > 2)):
@@ -166,3 +166,26 @@ class BkPrecision4053:
     
     cmmd = channel_no_str + ":ARWV INDEX," + mem_index_str
     self.instrument.write(cmmd)
+
+  def channel_command(self, channel_no, enable = True, load_50_ohm = False):
+  # check if given arguments values are correct
+    if ((channel_no < 1) or (channel_no > 2)):
+      raise ValueError("Arbitrary waveform generator channel number can either be set to 1 or 2")
+    
+    cmmd = "C{0:1d}:".format(channel_no)
+
+    cmmd += "OUTP "
+    if (enable == True):
+      cmmd += "ON,"
+    else:
+      cmmd += "OFF,"
+
+    cmmd += "LOAD,"
+    if (load_50_ohm == True):
+      cmmd += "50"
+    else:
+      cmmd += "HZ"
+
+    self.instrument.write(cmmd)
+      
+    

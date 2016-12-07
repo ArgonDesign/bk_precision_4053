@@ -48,8 +48,13 @@ if __name__ == "__main__":
     
     
     # assign the waveform from memory no.0 to AWG output channel no.1
-    my_awg.select_arbitrary_waveform(channel_no = 1, mem_index = 0)
+    my_awg.select_channel_arbitrary_waveform(channel_no = 1, mem_index = 0)
     
     # assign the waveform from memory no.1 to AWG output channel no.2
-    my_awg.select_arbitrary_waveform(channel_no = 2, mem_index = 1)
+    my_awg.select_channel_arbitrary_waveform(channel_no = 2, mem_index = 1)
     
+    # enable output channel 1 for high impedance load
+    my_awg.channel_command(channel_no = 1, enable = True, load_50_ohm = False)
+    
+    # enable output channel 2 for 50R impedance load
+    my_awg.channel_command(channel_no = 2, enable = True, load_50_ohm = True)
