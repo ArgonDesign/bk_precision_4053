@@ -60,7 +60,7 @@ if __name__ == "__main__":
     # enable output channel 2 for 50R impedance load
     my_awg.channel_command(channel_no = 2, enable = True, load_50_ohm = True)
 
-    # enable buzzer
+    # beep with the buzzer
     my_awg.beep_once()
     
     # wait for 5 second
@@ -70,5 +70,5 @@ if __name__ == "__main__":
     my_awg.channel_command(channel_no = 1, enable = False, load_50_ohm = False)
     my_awg.channel_command(channel_no = 2, enable = False, load_50_ohm = True)
     
-    # disable buzzer
+    # beep with the buzzer
     my_awg.beep_once()
