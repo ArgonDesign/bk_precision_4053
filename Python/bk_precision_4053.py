@@ -127,8 +127,8 @@ class BkPrecision4053:
     cmmd += "WAVEDATA,"
   
   # optional alignment for waveform data
-    if ((len(cmmd) % 2) == 1):
-      cmmd += "\xFF"
+    if ((len(cmmd) % 2) == 0):
+      cmmd += "\x00"
   
   # and the waveform data
   # first find the minimum and maximum data value and scale the whole set accordingly
