@@ -29,23 +29,8 @@ if __name__ == "__main__":
   print (my_instrument.query("STL? RELEASE"))
   print (my_instrument.query("PROD BAND?"))
  
-  # my_instrument.query('WVDT M50?')
-
-  # my_instrument.write('WVDT? M50')
-  # data = my_instrument.read_raw()
-  # dump_ascii_hex(data)
-  
-  # strip off actual waveform data
-  # waveform_str_to_find = "WAVEDATA,"
-  # waveform_data_index = data.find(waveform_str_to_find) + len(waveform_str_to_find)
-  # # make sure that the index is odd (waveform data have to be aligned in actual USB packet)
-  # if ((waveform_data_index % 2) == 0):
-    # waveform_data_index += 1
-  
-  # waveform_data = data[waveform_data_index:]
-
-  # now try to write command to modify the waveform
-  cmmd = "C1:WVDT M50,WVNM,wave2,TYPE,5,LENGTH,32KB,FREQ,1000.000000000,AMPL,5.000000000,OFST,0.000000000,PHASE,0.000000000,WAVEDATA,"
+  # now write command to modify the waveform
+  cmmd = "WVDT M50,WVNM,wave2,TYPE,5,LENGTH,32KB,FREQ,1000.000000000,AMPL,5.000000000,OFST,0.000000000,PHASE,0.000000000,WAVEDATA,"
   cmmd += "\xFF"
   
   values = [0x1FFF] * 8192
@@ -58,11 +43,12 @@ if __name__ == "__main__":
 
   # for some reason (probably a bug in BK precision software), WVDT command data length has to be one byte less that what
   # one expects it to be. Failing to strip one byte off results in the generator ignoring the WVDT command completely
-
   bin_values = bin_values[:-1]
-  print ("len(cmmd) = {0} len(bin_values) = {1} totat = {2}".format(len(cmmd), len(bin_values), len(cmmd+bin_values)))
+  
+  # write the command to the instrument
   my_instrument.write_raw(cmmd + bin_values)
 
-  print my_instrument.write('C1:ARWV INDEX,50')
+  # use arbitrary waveform on channel 1
+  my_instrument.write('C1:ARWV INDEX,50')
 
   my_instrument.close()
