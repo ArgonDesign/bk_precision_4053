@@ -64,7 +64,7 @@ class BkPrecision4053:
     print (self.instrument.query("IDN-SGLT-PRI?"))
     print (self.instrument.query("PROD BAND?"))
 
-  def define_arbitrary_waveform(self, mem_index, data, name = None, freq_hz = 1000.0, amp_v = 1.0, offset_v = 0.0, phase_deg = 0.0):
+  def define_arbitrary_waveform(self, mem_index, data, name = None, freq_hz = 1000.0, amp_vpp = 1.0, offset_v = 0.0, phase_deg = 0.0):
   
   # check if given arguments values are correct
     if ((mem_index < 0) or (mem_index > 9)):
@@ -87,9 +87,9 @@ class BkPrecision4053:
     elif (freq_hz > 10000000.0):
       raise ValueError("Arbitrary waveform frequency can't be more than 10MHz")
     
-    if (amp_v <= 0.0):
+    if (amp_vpp <= 0.0):
       raise ValueError("Arbitrary waveform amplitude has to be positive")
-    elif (amp_v > 10.0):
+    elif (amp_vpp > 10.0):
       raise ValueError("Arbitrary waveform amplitude can't be more than 10V")
     
     if ((offset_v < -5.0) or (offset_v > 5.0)):
@@ -112,7 +112,7 @@ class BkPrecision4053:
           name_str.join(" ")
 
     freq_str = "{0:.9f}".format(freq_hz)
-    amp_str = "{0:.9f}".format(amp_v)
+    amp_str = "{0:.9f}".format(amp_vpp)
     offset_str = "{0:.9f}".format(offset_v)
     phase_str =  "{0:.9f}".format(phase_deg)
     

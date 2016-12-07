@@ -25,43 +25,31 @@ if __name__ == "__main__":
   with BkPrecision4053(rm, u"USB0::0xF4ED::0xEE3A::389D15114::INSTR") as my_awg:
     my_awg.identify()
     
+    # define bipolar 1kHz 2Vpp amplitude square wave in memory no.0
     waveform_data = [-1.0] * 8192
     waveform_data += [1.0] * 8192
+    my_awg.define_arbitrary_waveform(mem_index = 0, data = waveform_data, freq_hz = 1000.0, amp_vpp = 2.0)
     
-    my_awg.define_arbitrary_waveform(mem_index = 0, data = waveform_data)
+    # define bipolar 2kHz 3Vpp amplitude triangle wave in memory no.1
+    waveform_data = []
+    for i in range(8192):
+      waveform_data.append(((2.0/8192) * i) - 1.0)
+    for i in range(8192):
+      waveform_data.append(((-2.0/8192) * i) + 1.0)
+    my_awg.define_arbitrary_waveform(mem_index = 1, data = waveform_data, freq_hz = 2000.0, amp_vpp = 3.0)
+
+    # define bipolar 5kHz 0.5Vpp amplitude sawtooth wave in memory no.2
+    waveform_data = []
+    for i in range(8192):
+      waveform_data.append(((2.0/8192) * i) - 1.0)
+    for i in range(8192):
+      waveform_data.append(((2.0/8192) * i) - 1.0)
+    my_awg.define_arbitrary_waveform(mem_index = 2, data = waveform_data, freq_hz = 5000.0, amp_vpp = 0.5)
+    
+    
+    # assign the waveform from memory no.0 to AWG output channel no.1
     my_awg.select_arbitrary_waveform(channel_no = 1, mem_index = 0)
     
-  # my_instrument = rm.open_resource(u'USB0::0xF4ED::0xEE3A::389D15114::INSTR')
-  # # setup write termination characters
-  # my_instrument.write_termination = "\n"
-
-  # # perform the same queries as EasyWave does
-  # print (my_instrument.query("*IDN?"))
-  # print (my_instrument.query("PROD MODEL?"))
-  # print (my_instrument.query("IDN-SGLT-PRI?"))
-  # print (my_instrument.query("STL? RELEASE"))
-  # print (my_instrument.query("PROD BAND?"))
- 
-  # # now write command to modify the waveform
-  # cmmd = "WVDT M50,WVNM,wave2,TYPE,5,LENGTH,32KB,FREQ,1000.000000000,AMPL,5.000000000,OFST,0.000000000,PHASE,0.000000000,WAVEDATA,"
-  # cmmd += "\xFF"
-  
-  # values = [0x1FFF] * 8192
-  # values += [0x2000] * 8192
-  
-  # bin_values = ""
-  # for i in range(len(values)):
-    # bin_values += chr((values[i] >> 8) & 0xFF)
-    # bin_values += chr(values[i] & 0xFF)
-
-  # # for some reason (probably a bug in BK precision software), WVDT command data length has to be one byte less that what
-  # # one expects it to be. Failing to strip one byte off results in the generator ignoring the WVDT command completely
-  # bin_values = bin_values[:-1]
-  
-  # # write the command to the instrument
-  # my_instrument.write_raw(cmmd + bin_values)
-
-  # # use arbitrary waveform on channel 1
-  # my_instrument.write('C1:ARWV INDEX,50')
-
-  # my_instrument.close()
+    # assign the waveform from memory no.1 to AWG output channel no.2
+    my_awg.select_arbitrary_waveform(channel_no = 2, mem_index = 1)
+    
