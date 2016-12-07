@@ -65,7 +65,19 @@ class BkPrecision4053:
     print (self.instrument.query("PROD BAND?"))
 
   def define_arbitrary_waveform(self, mem_index, data, name = None, freq_hz = 1000.0, amp_vpp = 1.0, offset_v = 0.0, phase_deg = 0.0):
-  
+    """
+    Method defines and stores arbitrary waveform in one of memories in BK Precision 4053.
+    Arguments:
+      mem_index - index specifying which memory should be used for storage. 4053 has 10 memories indexed from 0 to 9
+      data -  indexable object (list, numpy array) containing floating point samples defining arbitrary waveform. For 4053 it has to containing
+              exactly 16384 samples. These samples define only the shape of the waveform, amplitude and repetitions frequency is defined by other arguments
+      name -  waveform name. If not provided, standard name is assigned. If provided, it has to be no more than 5 characters long
+      freq_hz - waveform repetition frequency given in Hz
+      amp_vpp - waveform peak-to-peak amplitude given in V
+      offset_v  - waveform DC offset given in V
+      phase_deg - waveform phase shift given in degrees
+    """
+
   # check if given arguments values are correct
     if ((mem_index < 0) or (mem_index > 9)):
       raise ValueError("Arbitrary waveform index {0:d} is outside <0,9> range".format(mem_index))
@@ -151,7 +163,13 @@ class BkPrecision4053:
   # finally we are ready to send the command to the instrument
     self.instrument.write_raw(cmmd + bin_data_str)
 
-  def select_channel_arbitrary_waveform(self, channel_no, mem_index):
+  def assign_arbitrary_waveform_to_channel(self, channel_no, mem_index):
+    """
+    Method assigns arbitrary waveform to specific 4053 output channel
+    Arguments:
+      channel_no - 4053 output channel number. Can either take value 1 or 2
+      mem_index - index specifying which memory should be used for storage. 4053 has 10 memories indexed from 0 to 9
+    """
   
   # check if given arguments values are correct
     if ((channel_no < 1) or (channel_no > 2)):
@@ -168,6 +186,14 @@ class BkPrecision4053:
     self.instrument.write(cmmd)
 
   def channel_command(self, channel_no, enable = True, load_50_ohm = False):
+    """
+    Method controls specific 4053 output channel
+    Arguments:
+      channel_no - 4053 output channel number. Can either take value 1 or 2
+      enable - if True, the channel gets enabled. Channel gets disabled otherwise
+      load_50_ohm - if True 4053 expects to drive 50R load. Otherwise 4053 expects to drive high impedance load
+    """
+  
   # check if given arguments values are correct
     if ((channel_no < 1) or (channel_no > 2)):
       raise ValueError("Arbitrary waveform generator channel number can either be set to 1 or 2")
