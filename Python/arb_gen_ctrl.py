@@ -28,8 +28,8 @@ if __name__ == "__main__":
     waveform_data = [-1.0] * 8192
     waveform_data += [1.0] * 8192
     
-    my_awg.define_arbitrary_waveform(0, waveform_data)
-    my_awg.select_arbitrary_waveform(1, 0)
+    my_awg.define_arbitrary_waveform(mem_index = 0, data = waveform_data)
+    my_awg.select_arbitrary_waveform(channel_no = 1, mem_index = 0)
     
   # my_instrument = rm.open_resource(u'USB0::0xF4ED::0xEE3A::389D15114::INSTR')
   # # setup write termination characters

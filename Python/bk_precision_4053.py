@@ -126,10 +126,6 @@ class BkPrecision4053:
     cmmd += "PHASE," + phase_str + ","
     cmmd += "WAVEDATA,"
   
-  # optional alignment for waveform data
-    if ((len(cmmd) % 2) == 0):
-      cmmd += "\x00"
-  
   # and the waveform data
   # first find the minimum and maximum data value and scale the whole set accordingly
     min_val = min(data)
@@ -142,11 +138,11 @@ class BkPrecision4053:
     bin_data_str = ""
     for i in range(len(data)):
       sample_float = data[i]
-      sample_float_scaled = sample_float / scale
-      sample_int_scaled_int14 = (int)(sample_float_scaled * 8191.0)  # multiplying by 0x1FFF = 8191 rather than 0x2000 = 8192 will prevent overflow
-    # convert it to big endian binary string representation as required by the instrument
-      bin_data_str += chr((sample_int_scaled_int14 >> 8) & 0xFF)
-      bin_data_str += chr(sample_int_scaled_int14 & 0xFF)
+      sample_float_scaled_int14 = (sample_float * 8191.0) / scale  # multiplying by 0x1FFF = 8191 rather than 0x2000 = 8192 will prevent overflow
+      sample_int_scaled_int14 = (int)(sample_float_scaled_int14)
+      u2_int14_val = sample_int_scaled_int14 & 0x3FFF
+      bin_data_str += chr((u2_int14_val >> 8) & 0xFF)
+      bin_data_str += chr(u2_int14_val & 0xFF)
 
   # for some reason (probably a bug in BK precision software), WVDT command data length has to be one byte less that what
   # one expects it to be. Failing to strip one byte off results in the generator ignoring the WVDT command completely
