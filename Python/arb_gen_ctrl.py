@@ -1,4 +1,5 @@
 import visa
+import time
 from bk_precision_4053 import BkPrecision4053
 
 def replace_non_printable(text, replacement = "."):
@@ -58,3 +59,16 @@ if __name__ == "__main__":
     
     # enable output channel 2 for 50R impedance load
     my_awg.channel_command(channel_no = 2, enable = True, load_50_ohm = True)
+
+    # enable buzzer
+    my_awg.beep_once()
+    
+    # wait for 5 second
+    time.sleep(5.0)
+    
+    # disable both AWG outputs
+    my_awg.channel_command(channel_no = 1, enable = False, load_50_ohm = False)
+    my_awg.channel_command(channel_no = 2, enable = False, load_50_ohm = True)
+    
+    # disable buzzer
+    my_awg.beep_once()

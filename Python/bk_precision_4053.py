@@ -213,5 +213,7 @@ class BkPrecision4053:
       cmmd += "HZ"
 
     self.instrument.write(cmmd)
-      
-    
+  
+  def beep_once(self):
+    cmmd = "BUZZ ON"
+    self.instrument.write(cmmd)
