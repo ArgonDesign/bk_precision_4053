@@ -52,7 +52,7 @@ class BkPrecision4053:
     """
     if (idn_string.find("BK Precision,4053") != -1):
       return True
-    else
+    else:
       return False
       
   def identify(self):
@@ -75,7 +75,7 @@ class BkPrecision4053:
     if (name != None):
       if not (type(name) is str):
         raise ValueError("Arbitrary waveform name has to be a string")
-      elif (len(name) > 5)):
+      elif (len(name) > 5):
         raise ValueError("Arbitrary waveform name can be up to 5 characters long")
 
     if ((name != None) and (len(name) > 5)):
@@ -125,6 +125,10 @@ class BkPrecision4053:
     cmmd += "PHASE," + phase_str + ","
     cmmd += "WAVEDATA,"
   
+  # optional alignment for waveform data
+    if ((len(cmmd) % 2) == 1):
+      cmmd += "\xFF"
+  
   # and the waveform data
   # first find the minimum and maximum data value and scale the whole set accordingly
     min_val = min(data)
@@ -138,7 +142,7 @@ class BkPrecision4053:
     for i in range(len(data)):
       sample_float = data[i]
       sample_float_scaled = sample_float / scale
-      sample_int_scaled_int14 = (int)(sample_float_scaled * (float)0x1FFF)  # multiplying by 0x1FFF rather than 0x2000 will prevent overflow
+      sample_int_scaled_int14 = (int)(sample_float_scaled * 8191.0)  # multiplying by 0x1FFF = 8191 rather than 0x2000 = 8192 will prevent overflow
     # convert it to big endian binary string representation as required by the instrument
       bin_data_str += chr((sample_int_scaled_int14 >> 8) & 0xFF)
       bin_data_str += chr(sample_int_scaled_int14 & 0xFF)
