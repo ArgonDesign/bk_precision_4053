@@ -45,7 +45,7 @@ if __name__ == "__main__":
   # waveform_data = data[waveform_data_index:]
 
   # now try to write command to modify the waveform
-  cmmd = "C1:WVDT M50,WVNM,wave2,TYPE,5,LENGTH,32KB,FREQ,1000.000000000,AMPL,4.000000000,OFST,0.000000000,PHASE,0.000000000,WAVEDATA,"
+  cmmd = "C1:WVDT M50,WVNM,wave2,TYPE,5,LENGTH,32KB,FREQ,1000.000000000,AMPL,5.000000000,OFST,0.000000000,PHASE,0.000000000,WAVEDATA,"
   cmmd += "\xFF"
   
   values = [0x1FFF] * 8192
@@ -56,6 +56,11 @@ if __name__ == "__main__":
     bin_values += chr((values[i] >> 8) & 0xFF)
     bin_values += chr(values[i] & 0xFF)
 
+  # for some reason (probably a bug in BK precision software), WVDT command data length has to be one byte less that what
+  # one expects it to be. Failing to strip one byte off results in the generator ignoring the WVDT command completely
+
+  bin_values = bin_values[:-1]
+  print ("len(cmmd) = {0} len(bin_values) = {1} totat = {2}".format(len(cmmd), len(bin_values), len(cmmd+bin_values)))
   my_instrument.write_raw(cmmd + bin_values)
 
   print my_instrument.write('C1:ARWV INDEX,50')
