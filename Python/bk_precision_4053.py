@@ -153,12 +153,14 @@ class BkPrecision4053:
       sample_float_scaled_int14 = (sample_float * 8191.0) / scale  # multiplying by 0x1FFF = 8191 rather than 0x2000 = 8192 will prevent overflow
       sample_int_scaled_int14 = (int)(sample_float_scaled_int14)
       u2_int14_val = sample_int_scaled_int14 & 0x3FFF
-      bin_data_str += chr((u2_int14_val >> 8) & 0xFF)
+    # add waveform data as a little endian binary values
       bin_data_str += chr(u2_int14_val & 0xFF)
+      bin_data_str += chr((u2_int14_val >> 8) & 0xFF)
 
-  # for some reason (probably a bug in BK precision software), WVDT command data length has to be one byte less that what
-  # one expects it to be. Failing to strip one byte off results in the generator ignoring the WVDT command completely
-    bin_data_str = bin_data_str[:-1]
+  # for some reason (probably a bug in BK precision software), WVDT command data length has to be one byte more than what
+  # one expects it to be. Failing to add one byte results in the generator ignoring the WVDT command completely
+    # bin_data_str = bin_data_str + bin_data_str[-2]
+
 
   # finally we are ready to send the command to the instrument
     self.instrument.write_raw(cmmd + bin_data_str)
