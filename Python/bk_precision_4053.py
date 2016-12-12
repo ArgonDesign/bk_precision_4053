@@ -157,11 +157,6 @@ class BkPrecision4053:
       bin_data_str += chr(u2_int14_val & 0xFF)
       bin_data_str += chr((u2_int14_val >> 8) & 0xFF)
 
-  # for some reason (probably a bug in BK precision software), WVDT command data length has to be one byte more than what
-  # one expects it to be. Failing to add one byte results in the generator ignoring the WVDT command completely
-    # bin_data_str = bin_data_str + bin_data_str[-2]
-
-
   # finally we are ready to send the command to the instrument
     self.instrument.write_raw(cmmd + bin_data_str)
 

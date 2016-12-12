@@ -34,25 +34,22 @@ if __name__ == "__main__":
     # define bipolar 2kHz 3Vpp amplitude triangle wave in memory no.1
     waveform_data = []
     for i in range(8192):
-      waveform_data.append(((2.0/8192) * i) - 1.0)
+      waveform_data.append(((2.0/8192.0) * i) - 1.0)
     for i in range(8192):
-      waveform_data.append(((-2.0/8192) * i) + 1.0)
+      waveform_data.append(((-2.0/8192.0) * i) + 1.0)
     my_awg.define_arbitrary_waveform(mem_index = 1, data = waveform_data, freq_hz = 2000.0, amp_vpp = 3.0)
 
     # define bipolar 5kHz 0.5Vpp amplitude sawtooth wave in memory no.2
     waveform_data = []
-    for i in range(8192):
-      waveform_data.append(((2.0/8192) * i) - 1.0)
-    for i in range(8192):
-      waveform_data.append(((2.0/8192) * i) - 1.0)
+    for i in range(16384):
+      waveform_data.append(((2.0/16384.0) * i) - 1.0)
     my_awg.define_arbitrary_waveform(mem_index = 2, data = waveform_data, freq_hz = 5000.0, amp_vpp = 0.5)
     
-    
     # assign the waveform from memory no.0 to AWG output channel no.1
-    my_awg.assign_arbitrary_waveform_to_channel(channel_no = 1, mem_index = 0)
+    my_awg.assign_arbitrary_waveform_to_channel(channel_no = 1, mem_index = 1)
     
     # assign the waveform from memory no.1 to AWG output channel no.2
-    my_awg.assign_arbitrary_waveform_to_channel(channel_no = 2, mem_index = 1)
+    my_awg.assign_arbitrary_waveform_to_channel(channel_no = 2, mem_index = 2)
     
     # enable output channel 1 for high impedance load
     my_awg.channel_command(channel_no = 1, enable = True, load_50_ohm = False)
