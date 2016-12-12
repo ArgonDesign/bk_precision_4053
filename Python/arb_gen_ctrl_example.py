@@ -53,26 +53,26 @@ if __name__ == "__main__":
     my_awg.define_arbitrary_waveform(mem_index = 3, data = waveform_data, freq_hz = 10000.0, amp_vpp = 1.0)
     
     # assign the waveform from memory no.3 to AWG output channel no.1
-    my_awg.assign_arbitrary_waveform_to_channel(channel_no = 1, mem_index = 3)
+    my_awg.assign_arbitrary_waveform_to_channel(channel_no = 1, mem_index = 3, load_50_ohm = False)
     
     # assign the waveform from memory no.2 to AWG output channel no.2
-    my_awg.assign_arbitrary_waveform_to_channel(channel_no = 2, mem_index = 2)
+    my_awg.assign_arbitrary_waveform_to_channel(channel_no = 2, mem_index = 2, load_50_ohm = False)
     
     # enable output channel 1 for high impedance load
-    my_awg.channel_command(channel_no = 1, enable = True, load_50_ohm = False)
+    my_awg.channel_command(channel_no = 1, enable = True)
     
     # enable output channel 2 for high impedance load
-    my_awg.channel_command(channel_no = 2, enable = True, load_50_ohm = False)
+    my_awg.channel_command(channel_no = 2, enable = True)
 
     # beep with the buzzer
     my_awg.beep_once()
     
     # wait for 5 second
-    # time.sleep(5.0)
+    time.sleep(5.0)
     
-    # # disable both AWG outputs
-    # my_awg.channel_command(channel_no = 1, enable = False, load_50_ohm = False)
-    # my_awg.channel_command(channel_no = 2, enable = False, load_50_ohm = True)
+    # disable both AWG outputs
+    my_awg.channel_command(channel_no = 1, enable = False)
+    my_awg.channel_command(channel_no = 2, enable = False)
     
-    # # beep with the buzzer
-    # my_awg.beep_once()
+    # beep with the buzzer
+    my_awg.beep_once()

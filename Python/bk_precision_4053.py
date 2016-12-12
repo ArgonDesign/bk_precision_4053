@@ -160,14 +160,16 @@ class BkPrecision4053:
   # finally we are ready to send the command to the instrument
     self.instrument.write_raw(cmmd + bin_data_str)
 
-  def assign_arbitrary_waveform_to_channel(self, channel_no, mem_index):
+  def assign_arbitrary_waveform_to_channel(self, channel_no, mem_index, load_50_ohm = False):
     """
-    Method assigns arbitrary waveform to specific 4053 output channel
+    Method assigns arbitrary waveform to specific 4053 output channel. It disables the output to avoid glitches
+    and set the right load value
     Arguments:
       channel_no - 4053 output channel number. Can either take value 1 or 2
       mem_index - index specifying which memory should be used for storage. 4053 has 10 memories indexed from 0 to 9
+      load_50_ohm - if True, the waveform amplitude is being assigned assuming 50ohm load (it doubles the amplitude
+                    on the output to get the right value on the load
     """
-  
   # check if given arguments values are correct
     if ((channel_no < 1) or (channel_no > 2)):
       raise ValueError("Arbitrary waveform generator channel number can either be set to 1 or 2")
@@ -175,14 +177,27 @@ class BkPrecision4053:
     if ((mem_index < 0) or (mem_index > 9)):
       raise ValueError("Arbitrary waveform index {0:d} is outside <0,9> range".format(mem_index))
     
-  # arguments are fine, so prepare their string version in the right format
+  # arguments are fine, so disable the output
+    cmmd = "C{0:1d}:".format(channel_no)
+
+    cmmd += "OUTP "
+    cmmd += "OFF,"
+
+    cmmd += "LOAD,"
+    if (load_50_ohm == True):
+      cmmd += "50"
+    else:
+      cmmd += "HZ"
+
+    self.instrument.write(cmmd)
+  # now the output is disabled and the load value is set, so we are ready to assign the waveform to the channel
     channel_no_str = "C{0:1d}".format(channel_no)
     mem_index_str = "M{0:2d}".format(mem_index + 50)
     
     cmmd = channel_no_str + ":ARWV INDEX," + mem_index_str
     self.instrument.write(cmmd)
 
-  def channel_command(self, channel_no, enable = True, load_50_ohm = False):
+  def channel_command(self, channel_no, enable = True):
     """
     Method controls specific 4053 output channel
     Arguments:
@@ -201,13 +216,7 @@ class BkPrecision4053:
     if (enable == True):
       cmmd += "ON,"
     else:
-      cmmd += "OFF,"
-
-    cmmd += "LOAD,"
-    if (load_50_ohm == True):
-      cmmd += "50"
-    else:
-      cmmd += "HZ"
+      cmmd += "OFF"
 
     self.instrument.write(cmmd)
   
