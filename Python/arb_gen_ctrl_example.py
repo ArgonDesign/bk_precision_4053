@@ -1,5 +1,6 @@
 import visa
 import time
+import math
 from bk_precision_4053 import BkPrecision4053
 
 def replace_non_printable(text, replacement = "."):
@@ -45,27 +46,33 @@ if __name__ == "__main__":
       waveform_data.append(((2.0/16384.0) * i) - 1.0)
     my_awg.define_arbitrary_waveform(mem_index = 2, data = waveform_data, freq_hz = 5000.0, amp_vpp = 0.5)
     
-    # assign the waveform from memory no.0 to AWG output channel no.1
-    my_awg.assign_arbitrary_waveform_to_channel(channel_no = 1, mem_index = 1)
+    #define sinewave 10kHz 1Vpp amplitude in memory no.3
+    waveform_data = []
+    for i in range(16384):
+      waveform_data.append(math.sin(2.0*math.pi*(i/16384.0)))
+    my_awg.define_arbitrary_waveform(mem_index = 3, data = waveform_data, freq_hz = 10000.0, amp_vpp = 1.0)
     
-    # assign the waveform from memory no.1 to AWG output channel no.2
+    # assign the waveform from memory no.3 to AWG output channel no.1
+    my_awg.assign_arbitrary_waveform_to_channel(channel_no = 1, mem_index = 3)
+    
+    # assign the waveform from memory no.2 to AWG output channel no.2
     my_awg.assign_arbitrary_waveform_to_channel(channel_no = 2, mem_index = 2)
     
     # enable output channel 1 for high impedance load
     my_awg.channel_command(channel_no = 1, enable = True, load_50_ohm = False)
     
-    # enable output channel 2 for 50R impedance load
-    my_awg.channel_command(channel_no = 2, enable = True, load_50_ohm = True)
+    # enable output channel 2 for high impedance load
+    my_awg.channel_command(channel_no = 2, enable = True, load_50_ohm = False)
 
     # beep with the buzzer
     my_awg.beep_once()
     
     # wait for 5 second
-    time.sleep(5.0)
+    # time.sleep(5.0)
     
-    # disable both AWG outputs
-    my_awg.channel_command(channel_no = 1, enable = False, load_50_ohm = False)
-    my_awg.channel_command(channel_no = 2, enable = False, load_50_ohm = True)
+    # # disable both AWG outputs
+    # my_awg.channel_command(channel_no = 1, enable = False, load_50_ohm = False)
+    # my_awg.channel_command(channel_no = 2, enable = False, load_50_ohm = True)
     
-    # beep with the buzzer
-    my_awg.beep_once()
+    # # beep with the buzzer
+    # my_awg.beep_once()
